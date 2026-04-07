@@ -35,10 +35,12 @@ class _MatchingScreenState extends State<MatchingScreen> with SingleTickerProvid
   }
 
   void _initSocket() {
-    // Tự động chọn địa chỉ Server:
-    // - Web: dùng localhost
-    // - Android Emulator: dùng 10.0.2.2
-    String serverUrl = kIsWeb ? 'http://localhost:3000' : 'http://10.0.2.2:3000';
+    // Ưu tiên dùng URL từ lệnh build (flutter build web --dart-define=API_URL=https://...)
+    // Nếu không có, mặc định dùng localhost (cho Web) hoặc 10.0.2.2 (cho Android Emulator)
+    const String envUrl = String.fromEnvironment('API_URL');
+    String serverUrl = envUrl.isNotEmpty 
+        ? envUrl 
+        : (kIsWeb ? 'http://localhost:3000' : 'http://10.0.2.2:3000');
     
     socket = io.io(serverUrl, <String, dynamic>{
       'transports': ['websocket'],

@@ -9,7 +9,7 @@ let roomDetails = {}; // roomId -> { users: { socketId: profile } }
 const initSocket = (server) => {
     io = new Server(server, {
         cors: {
-            origin: "*",
+            origin: "*", // allow all or specify your github pages domain here later
             methods: ["GET", "POST"]
         }
     });
