@@ -7,7 +7,10 @@ const { initSocket } = require('./socket');
 const app = express();
 const server = http.createServer(app);
 
-app.use(cors());
+app.use(cors({
+    origin: ["https://anhnguyen300823-cpu.github.io", "http://localhost:5000"], // Cho phép web thật và máy local
+    methods: ["GET", "POST"]
+}));
 app.use(express.json());
 
 // Initialize Socket.io

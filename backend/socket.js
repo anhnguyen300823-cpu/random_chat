@@ -9,8 +9,10 @@ let roomDetails = {}; // roomId -> { users: { socketId: profile } }
 const initSocket = (server) => {
     io = new Server(server, {
         cors: {
-            origin: "*", // allow all or specify your github pages domain here later
-            methods: ["GET", "POST"]
+            // Thay đổi origin từ "*" thành danh sách cụ thể
+            origin: ["https://anhnguyen300823-cpu.github.io", "http://localhost:5000"],
+            methods: ["GET", "POST"],
+            credentials: true
         }
     });
 
@@ -20,7 +22,7 @@ const initSocket = (server) => {
         socket.on('find_partner', (data) => {
             const { profile, filters } = data;
             console.log(`User ${profile.nickname} looking for partner...`);
-            
+
             // Check if user is already in a room or queue
             if (activeRooms[socket.id]) return;
             waitingQueue = waitingQueue.filter(u => u.socket.id !== socket.id);
@@ -33,7 +35,7 @@ const initSocket = (server) => {
                 let match = true;
                 if (filters && filters.gender && waitingUser.profile.gender !== filters.gender) match = false;
                 if (waitingUser.filters && waitingUser.filters.gender && profile.gender !== waitingUser.filters.gender) match = false;
-                
+
                 return match;
             });
 
@@ -69,7 +71,7 @@ const initSocket = (server) => {
         const notifyPartnerLeft = (roomId, excludeSocketId) => {
             if (roomId) {
                 socket.to(roomId).emit('partner_left', { message: 'Partner has left the chat.' });
-                
+
                 // Cleanup Room
                 if (roomDetails[roomId]) {
                     Object.keys(roomDetails[roomId].users).forEach(uid => {
