@@ -1,0 +1,33 @@
+name: Deploy Flutter Web
+
+on:
+  push:
+    branches:
+      - main # Khi bạn push code lên nhánh main, "Robot" sẽ thức dậy
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Bước 1: Lấy code từ GitHub về máy ảo của "Robot"
+      - uses: actions/checkout@v3
+
+      # Bước 2: Cài đặt môi trường Flutter cho máy ảo
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      # Bước 3: Chạy lệnh Build Web tự động
+      - name: Build Web
+        run: |
+          cd mobile_app
+          flutter pub get
+          flutter build web --release --dart-define=API_URL=https://api-random-chat.onrender.com --base-href /random_chat/
+
+      # Bước 4: Lấy kết quả Build (thư mục build/web) đẩy lên nhánh gh-pages để chạy web
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: mobile_app/build/web
+          branch: gh-pages
